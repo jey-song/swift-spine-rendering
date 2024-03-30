@@ -45,6 +45,10 @@ final class ViewController: UIViewController {
         spineView.play()
     }
 
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+
     // MARK: Private
 
     private let logger: Logger = ObjectStorage.shared.logger

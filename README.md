@@ -32,7 +32,3 @@ for skeleton in skeletons {
 - Texture atlas: Pack - checked
 - Check "Premultiplied alpha" in "Pack settings"
 
-## Side note about rendering
-
-Since this was a side projet I did play with [triple buffering technique](https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/TripleBuffering.html). 
-It should make rendering async, which improve performance, but it also will have severe punishment, if there is no buffer available for rendering.

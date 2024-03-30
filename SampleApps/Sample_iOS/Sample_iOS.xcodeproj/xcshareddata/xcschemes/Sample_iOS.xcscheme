@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1510"
+   LastUpgradeVersion = "1530"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      buildArchitectures = "Automatic">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -14,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SampleApp"
-               BuildableName = "SampleApp"
-               BlueprintName = "SampleApp"
-               ReferencedContainer = "container:">
+               BlueprintIdentifier = "91FEECF92B3B40DB00C5ADAA"
+               BuildableName = "Sample_iOS.app"
+               BlueprintName = "Sample_iOS"
+               ReferencedContainer = "container:Sample_iOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -38,15 +39,16 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
+      showGraphicsOverview = "Yes"
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "SampleApp"
-            BuildableName = "SampleApp"
-            BlueprintName = "SampleApp"
-            ReferencedContainer = "container:">
+            BlueprintIdentifier = "91FEECF92B3B40DB00C5ADAA"
+            BuildableName = "Sample_iOS.app"
+            BlueprintName = "Sample_iOS"
+            ReferencedContainer = "container:Sample_iOS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -60,10 +62,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "SampleApp"
-            BuildableName = "SampleApp"
-            BlueprintName = "SampleApp"
-            ReferencedContainer = "container:">
+            BlueprintIdentifier = "91FEECF92B3B40DB00C5ADAA"
+            BuildableName = "Sample_iOS.app"
+            BlueprintName = "Sample_iOS"
+            ReferencedContainer = "container:Sample_iOS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

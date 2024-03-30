@@ -30,6 +30,7 @@ public protocol SpineViewRenderer: AnyObject {
 #if canImport(UIKit)
 import UIKit
 
+// TODO: Crossplatform compilation with macOS here is questionable, as `CADisplayLink` available only since macOS 14.0
 public final class SpineView: MTKView {
 
     public var cameraFrame: ScreenFrame
@@ -37,12 +38,19 @@ public final class SpineView: MTKView {
     public var presentedSkeletons: [SpineSkeleton] { renderingElements.values.map { $0.skeleton } }
 
     // TODO: Provide only skeleton names, instead of whole skeletons
-    /// - returns: true if `lhs` should be rendered before rhs
+    /// If needed, sort skeletons in needed order for current frame
     public var skeletonSorter: (inout [SpineSkeleton]) -> Void = { _ in }
 
     public var speed: Double {
         get { clock.speed }
         set { clock.speed = newValue }
+    }
+
+
+    public var showFpsCount: Bool = true {
+        didSet {
+            fpsLabel.isHidden = !showFpsCount
+        }
     }
 
     public init(metalStack: SpineMetalStack,
@@ -58,6 +66,8 @@ public final class SpineView: MTKView {
         super.init(frame: bounds, device: metalStack.generalMetalStack.device)
         depthStencilPixelFormat = .spineDepthTexture
         framebufferOnly = false
+
+        addFpsLabel()
     }
 
     @available(*, unavailable)
@@ -133,20 +143,26 @@ public final class SpineView: MTKView {
     /// keys is skeleton name
     private var renderingElements = [String: RenderingElement]()
 
-    private let bufferingSemaphore = DispatchSemaphore(value: .numberOfBuffers)
-    private var currentFameIndex: Int = 0
+    private let availableFramesIndecesStorage = AvailableFramesIndecesStorage()
+    private var renderedFrameTimes = RenderedFrameTimes()
 
     private let clock: RestartableSpineClock
 
     @objc
     private func update() {
-        // TODO: We probably might just skip step, if all buffers are busy atm
-        // we follow apple best practicies:
-        // https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/TripleBuffering.html
-        // we will have 3 buffer for vertices
-        bufferingSemaphore.wait()
+        // We are using triple buffering. For now we limit this calls to main thread, so we can avoid locks.
+        // https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/TripleBuffering.html .
 
-        currentFameIndex = (currentFameIndex + 1) % .numberOfBuffers
+        if showFpsCount {
+            updateFps(renderedFrameTimes.framesCountInLastSecond())
+        }
+
+        let currentFameIndex = availableFramesIndecesStorage.reserveFrameIndex()
+
+        guard let currentFameIndex else {
+            logger.warning("Skipping frame, because no free buffer")
+            return
+        }
 
 #if DEBUG
         metalStack.captureScope.begin()
@@ -214,8 +230,17 @@ public final class SpineView: MTKView {
 
         commandBuffer.present(currentDrawable)
 
-        commandBuffer.addCompletedHandler { [bufferingSemaphore] _ in
-            bufferingSemaphore.signal()
+        commandBuffer.addCompletedHandler { [availableFramesIndecesStorage, weak self] _ in
+            DispatchQueue.main.async {
+                availableFramesIndecesStorage.freeFrameIndex(currentFameIndex)
+                guard let self else {
+                    return
+                }
+
+                if self.showFpsCount {
+                    self.renderedFrameTimes.insert(Date().timeIntervalSince1970)
+                }
+            }
         }
 
         commandBuffer.commit()
@@ -245,6 +270,68 @@ public final class SpineView: MTKView {
         existeDisplayLink.remove(from: .current, forMode: .common)
         displayLink = nil
     }
+
+    private var fpsLabel = UILabel()
+
+    private func addFpsLabel() {
+        fpsLabel.textColor = .white
+        addSubview(fpsLabel)
+
+        fpsLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            fpsLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 5),
+            fpsLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5),
+        ])
+    }
+
+    func updateFps(_ fps: Int) {
+        fpsLabel.text = "\(fps)fps"
+    }
 }
 
 #endif // canImport(UIKit)
+
+final private class AvailableFramesIndecesStorage {
+    /// - returns: index in 0...Int.numberOfBuffers
+    /// - note: Main thread usage only
+    func reserveFrameIndex() -> Int? {
+        precondition(Thread.isMainThread)
+        defer {
+            storage.dropFirst()
+        }
+        return storage.first
+    }
+
+    /// - note: Main thread usage only
+    func freeFrameIndex(_ index: Int) {
+        precondition(Thread.isMainThread)
+        storage.append(index)
+    }
+
+    private var storage: [Int] = Array(0...Int.numberOfBuffers)
+}
+
+private struct RenderedFrameTimes {
+    /// - parameter date: each new date should be bigger than existed ones
+    /// - note: Main thread usage only
+    mutating func insert(_ date: TimeInterval) {
+        precondition(Thread.isMainThread)
+        storage.append(date)
+    }
+
+    /// - note: Main thread usage only
+    mutating func framesCountInLastSecond() -> Int {
+        precondition(Thread.isMainThread)
+        guard let last = storage.last else {
+            return 0
+        }
+        let startMesurement = last - 1
+
+        let subSequence = storage.drop(while: { $0 < startMesurement })
+        storage = Array(subSequence)
+        return storage.count
+    }
+
+    private var storage: [TimeInterval] = []
+}
+
