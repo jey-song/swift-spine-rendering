@@ -223,7 +223,7 @@ public extension UnsafeMutablePointer where Pointee == spMeshAttachment {
 
     @inlinable
     var uvsBuffer: UnsafeMutableBufferPointer<Float> {
-        UnsafeMutableBufferPointer<Float>(start: uvs, count: 2 * trianglesCount)
+        UnsafeMutableBufferPointer<Float>(start: uvs, count: worldVerticesLength)
     }
 
     @inlinable
