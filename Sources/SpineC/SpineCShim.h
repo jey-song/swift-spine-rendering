@@ -1,10 +1,3 @@
-//
-//  SpineC.h
-//  SpineC
-//
-//  Created by Nikolay Dzhulay on 16/01/2022.
-//
-
 #ifndef SpineCShim_h
 #define SpineCShim_h
 

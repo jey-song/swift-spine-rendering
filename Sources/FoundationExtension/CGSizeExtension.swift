@@ -1,3 +1,5 @@
+import CoreFoundation
+import CoreGraphics
 import Foundation
 
 public func *(lhs: CGFloat, rhs: CGSize) -> CGSize {

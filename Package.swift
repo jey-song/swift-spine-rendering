@@ -9,7 +9,16 @@ let package = Package(
         .iOS(.v14),
     ],
     products: [
-        .library(name: "SpineSwift", targets: ["SpineSwift", "SpineC"])
+        .library(
+            name: "SpineSwift", 
+            targets: [
+                "FoundationExtension",
+                "MetalExtension",
+                "SpineC",
+                "SpineSwift",
+                "SpineC-SwiftImpl",
+            ]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.5.3"),
@@ -24,7 +33,8 @@ let package = Package(
         ),
         .target(
             name: "SpineC",
-            publicHeadersPath: "include"),
+            publicHeadersPath: "include"
+        ),
         .target(
             name: "SpineC-SwiftImpl",
             dependencies: [

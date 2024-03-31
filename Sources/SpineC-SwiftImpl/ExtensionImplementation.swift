@@ -2,7 +2,7 @@ import Foundation
 import SpineC
 
 @_cdecl("_spUtil_readFile")
-func _spUtil_readFile(_ path: UnsafePointer<CChar>!, _ length: UnsafeMutablePointer<Int32>!) -> UnsafeMutablePointer<CChar>! {
+public func _spUtil_readFile(_ path: UnsafePointer<CChar>!, _ length: UnsafeMutablePointer<Int32>!) -> UnsafeMutablePointer<CChar>! {
     guard let impl = spineImplementations else {
         fatalError("Call `setupSpineImplementations` before using Spine")
     }
@@ -21,7 +21,7 @@ func _spUtil_readFile(_ path: UnsafePointer<CChar>!, _ length: UnsafeMutablePoin
 }
 
 @_cdecl("_spAtlasPage_createTexture")
-func _spAtlasPage_createTexture(_ self: UnsafeMutablePointer<spAtlasPage>!, _ path: UnsafePointer<CChar>!) {
+public func _spAtlasPage_createTexture(_ self: UnsafeMutablePointer<spAtlasPage>!, _ path: UnsafePointer<CChar>!) {
     guard let impl = spineImplementations else {
         fatalError("Call `setupSpineImplementations` before using Spine")
     }
@@ -41,7 +41,7 @@ func _spAtlasPage_createTexture(_ self: UnsafeMutablePointer<spAtlasPage>!, _ pa
 }
 
 @_cdecl("_spAtlasPage_disposeTexture")
-func _spAtlasPage_disposeTexture(_ self: UnsafeMutablePointer<spAtlasPage>!) {
+public func _spAtlasPage_disposeTexture(_ self: UnsafeMutablePointer<spAtlasPage>!) {
 
     guard let self = self else {
         fatalError("self can't be nil")

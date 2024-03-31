@@ -1,11 +1,3 @@
-//
-//  SpineC.h
-//  SpineC
-//
-//  Created by Nikolay Dzhulay on 17/09/2018.
-//  Copyright © 2018 ShawnMoore. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 //! Project version number for SpineC.

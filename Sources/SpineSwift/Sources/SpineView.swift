@@ -46,7 +46,6 @@ public final class SpineView: MTKView {
         set { clock.speed = newValue }
     }
 
-
     public var showFpsCount: Bool = true {
         didSet {
             fpsLabel.isHidden = !showFpsCount
