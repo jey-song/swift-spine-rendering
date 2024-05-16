@@ -1,16 +1,16 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated July 28, 2023. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2023, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
  * conditions of Section 2 of the Spine Editor License Agreement:
  * http://esotericsoftware.com/spine-editor-license
  *
- * Otherwise, it is permitted to integrate the Spine Runtimes into software
- * or otherwise create derivative works of the Spine Runtimes (collectively,
+ * Otherwise, it is permitted to integrate the Spine Runtimes into software or
+ * otherwise create derivative works of the Spine Runtimes (collectively,
  * "Products"), provided that each user of the Products must obtain their own
  * Spine Editor license and redistribution of the Products in any form must
  * include this license and copyright notice.
@@ -23,8 +23,8 @@
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES,
  * BUSINESS INTERRUPTION, OR LOSS OF USE, DATA, OR PROFITS) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THE
+ * SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
 #include <ctype.h>
@@ -97,8 +97,13 @@ spKeyValue spKeyValueArray_peek(spKeyValueArray *self) { return self->items[self
 
 spAtlasPage *spAtlasPage_create(spAtlas *atlas, const char *name) {
 	spAtlasPage *self = NEW(spAtlasPage);
-	CONST_CAST(spAtlas *, self->atlas) = atlas;
+	self->atlas = atlas;
 	MALLOC_STR(self->name, name);
+	self->minFilter = SP_ATLAS_NEAREST;
+	self->magFilter = SP_ATLAS_NEAREST;
+	self->format = SP_ATLAS_RGBA8888;
+	self->uWrap = SP_ATLAS_CLAMPTOEDGE;
+	self->vWrap = SP_ATLAS_CLAMPTOEDGE;
 	return self;
 }
 
@@ -110,7 +115,7 @@ void spAtlasPage_dispose(spAtlasPage *self) {
 
 /**/
 
-spAtlasRegion *spAtlasRegion_create() {
+spAtlasRegion *spAtlasRegion_create(void) {
 	spAtlasRegion *region = NEW(spAtlasRegion);
 	region->keyValues = spKeyValueArray_create(2);
 	return region;
@@ -140,21 +145,21 @@ static SimpleString *ss_trim(SimpleString *self) {
 	while (isspace((unsigned char) *self->start) && self->start < self->end)
 		self->start++;
 	if (self->start == self->end) {
-		self->length = (int)(self->end - self->start);
+		self->length = self->end - self->start;
 		return self;
 	}
 	self->end--;
 	while (((unsigned char) *self->end == '\r') && self->end >= self->start)
 		self->end--;
 	self->end++;
-	self->length = (int)(self->end - self->start);
+	self->length = self->end - self->start;
 	return self;
 }
 
 static int ss_indexOf(SimpleString *self, char needle) {
 	char *c = self->start;
 	while (c < self->end) {
-		if (*c == needle) return (int)(c - self->start);
+		if (*c == needle) return c - self->start;
 		c++;
 	}
 	return -1;
@@ -163,7 +168,7 @@ static int ss_indexOf(SimpleString *self, char needle) {
 static int ss_indexOf2(SimpleString *self, char needle, int at) {
 	char *c = self->start + at;
 	while (c < self->end) {
-		if (*c == needle) return (int)(c - self->start);
+		if (*c == needle) return c - self->start;
 		c++;
 	}
 	return -1;
@@ -182,13 +187,13 @@ static SimpleString ss_substr2(SimpleString *self, int s) {
 	SimpleString result;
 	result.start = self->start + s;
 	result.end = self->end;
-	result.length = (int)(result.end - result.start);
+	result.length = result.end - result.start;
 	return result;
 }
 
 static int /*boolean*/ ss_equals(SimpleString *self, const char *str) {
 	int i;
-	int otherLen = (int)strlen(str);
+	int otherLen = strlen(str);
 	if (self->length != otherLen) return 0;
 	for (i = 0; i < self->length; i++) {
 		if (self->start[i] != str[i]) return 0;
@@ -223,7 +228,7 @@ static SimpleString *ai_readLine(AtlasInput *self) {
 	self->line.end = self->index;
 	if (self->index != self->end) self->index++;
 	self->line = *ss_trim(&self->line);
-	self->line.length = (int)(self->line.end - self->line.start);
+	self->line.length = self->line.end - self->line.start;
 	return &self->line;
 }
 

@@ -42,11 +42,12 @@ final class SkeletonsLoaderImpl: SkeletonsLoader {
         let names = jsonFiles.map { $0.lastPathComponent }
                              .map { $0.fileNameByRemovingExtension }
 
-        return try names.map { name in
+        let infos = try names.map { name in
             try SpineSkeleton(name: name,
                               animationFolderUrl: folder,
                               logger: logger)
         }
+        return infos
     }
 
     // MARK: Private

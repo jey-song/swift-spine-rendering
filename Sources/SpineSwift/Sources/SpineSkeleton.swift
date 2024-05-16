@@ -79,7 +79,7 @@ public final class SpineSkeleton {
             throw SpineSkeletonError.failedToCreateSkeleton(name, skeletonJsonUrl)
         }
 
-        spSkeleton_updateWorldTransform(pSkeleton)
+        spSkeleton_updateWorldTransform(pSkeleton, spPhysics(0))
 
         // UnsafeMutablePointer<spAnimationStateData>
         let pAnimationStateData = spAnimationStateData_create(pSkeletonDataUnwrapped)
@@ -168,7 +168,7 @@ public final class SpineSkeleton {
         spAnimationState_update(pAnimationState, adjustedDelta)
 
         spAnimationState_apply(pAnimationState, pSkeleton)
-        spSkeleton_updateWorldTransform(pSkeleton)
+        spSkeleton_updateWorldTransform(pSkeleton, spPhysics(2))//spPhysics.SP_PHYSICS_UPDATE)
     }
 
     public func render(in renderer: SpineSkeletonRenderer, bonesFilter: SpineSkeletonBonesFilter) {

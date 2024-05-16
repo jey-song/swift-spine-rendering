@@ -3,7 +3,7 @@ import FoundationExtension
 import SpineC
 
 public extension String {
-    static let spineAtlasExtension = ".atlas.txt"
+    static let spineAtlasExtension = ".atlas"
 }
 
 public final class SpineAtlas {

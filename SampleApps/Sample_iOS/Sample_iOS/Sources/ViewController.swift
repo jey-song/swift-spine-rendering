@@ -29,14 +29,14 @@ final class ViewController: UIViewController {
         logger.info("Loading sekeltons...")
 
         let skeletonsLoader = ObjectStorage.shared.skeletonsLoader
-        let skeletonsFodler = Bundle.main.resourceURL!.appending(path: "Skeletons", directoryHint: .isDirectory)
-        let skeletons = try! skeletonsLoader.load(from: skeletonsFodler)
-
-        logger.info("Found \(skeletons.count) skeletons: \(skeletons.map { $0.name })")
-
-        for skeleton in skeletons {
-            spineView.add(skeleton: skeleton)
-            try! skeleton.setAnimation(named: "death", loop: true, completion: nil)
+        let skeletonsFodler = Bundle.main.resourceURL!.appending(path: "alien", directoryHint: .isDirectory)
+        if let skeletons = try? skeletonsLoader.load(from: skeletonsFodler) {
+            logger.info("Found \(skeletons.count) skeletons: \(skeletons.map { $0.name })")
+            
+            for skeleton in skeletons {
+                spineView.add(skeleton: skeleton)
+                try! skeleton.setAnimation(named: "death", loop: true, completion: nil)
+            }
         }
     }
 
